@@ -1,4 +1,14 @@
 package com.stackroute.Muzix.Application.exceptions;
 
-public class TrackAlreadyExistsException {
+import org.springframework.web.bind.annotation.ExceptionHandler;
+
+public class TrackAlreadyExistsException extends Exception {
+    private String message;
+    public TrackAlreadyExistsException(){}
+    public TrackAlreadyExistsException(String message){
+        super(message);
+        this.message= message;
+    }
+
+
 }

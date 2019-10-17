@@ -1,8 +1,11 @@
 package com.stackroute.Muzix.Application.controller;
 
+import com.stackroute.Muzix.Application.exceptions.TrackAlreadyExistsException;
+import com.stackroute.Muzix.Application.exceptions.TrackNotFoundException;
 import com.stackroute.Muzix.Application.service.TrackService;
-import com.stackroute.Muzix.Application.tracks.Track;
+import com.stackroute.Muzix.Application.domain.Track;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,36 +15,35 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "api/v1")
 public class TrackController {
-    TrackService trackService;
 
     @Autowired
-    public TrackController(TrackService trackService){
-        this.trackService=  trackService;
-    }
+    @Qualifier("trackServiceImpl")
+    TrackService trackService;
+
 
     @PostMapping("user")
-    public ResponseEntity<?> saveUser(@RequestBody Track track){
+    public ResponseEntity<?> saveUser(@RequestBody Track track) throws TrackAlreadyExistsException {
         ResponseEntity responseEntity;
-        try{
+//        try{
             trackService.saveTrack(track);
             responseEntity= new ResponseEntity<String>("Successfully Created", HttpStatus.CREATED);
-        }catch (Exception ex){
-            responseEntity= new ResponseEntity<String>(ex.getMessage(),HttpStatus.CONFLICT);
+//        }catch (TrackAlreadyExistsException ex){
+//            responseEntity= new ResponseEntity<String>(ex.getMessage(),HttpStatus.CONFLICT);
 
-        }
+//        }
         return responseEntity;
     }
 
     @PutMapping("user/{id}")
-    public ResponseEntity<?> updateTrack(@PathVariable("id") int id,@RequestBody Track track){
+    public ResponseEntity<?> updateTrack(@PathVariable("id") int id,@RequestBody Track track) throws TrackAlreadyExistsException {
         ResponseEntity responseEntity;
-        try{
+//        try{
             trackService.saveTrack(trackService.updateTrack(id,track));
             responseEntity= new ResponseEntity<String>("Successfully Created", HttpStatus.CREATED);
-        }catch (Exception ex){
-            responseEntity= new ResponseEntity<String>(ex.getMessage(),HttpStatus.CONFLICT);
-
-        }
+//        }catch (Exception ex){
+//            responseEntity= new ResponseEntity<String>(ex.getMessage(),HttpStatus.CONFLICT);
+//
+//        }
         return responseEntity;
     }
 
@@ -56,15 +58,15 @@ public class TrackController {
 
 
     @GetMapping("user/{trackName}")
-    public ResponseEntity<?> findByTrackName(@PathVariable("trackName") String trackName){
+    public ResponseEntity<?> findByTrackName(@PathVariable("trackName") String trackName) throws TrackNotFoundException {
         ResponseEntity responseEntity;
-        try{
+//        try{
             trackService.findByTrackName(trackName);
-            responseEntity= new ResponseEntity<String>("Yeah u can!!", HttpStatus.CREATED);
-        }catch (Exception ex){
-            responseEntity= new ResponseEntity<String>(ex.getMessage(),HttpStatus.CONFLICT);
-
-        }
+            responseEntity= new ResponseEntity<String>("Search found", HttpStatus.CREATED);
+//        }catch (TrackNotFoundException ex){
+//            responseEntity= new ResponseEntity<String>(ex.getMessage(),HttpStatus.CONFLICT);
+//
+//        }
         return responseEntity;
     }
 }

@@ -1,14 +1,20 @@
 package com.stackroute.Muzix.Application.service;
 
 import com.stackroute.Muzix.Application.Repository.TrackRepository;
-import com.stackroute.Muzix.Application.tracks.Track;
+import com.stackroute.Muzix.Application.exceptions.TrackAlreadyExistsException;
+import com.stackroute.Muzix.Application.exceptions.TrackNotFoundException;
+import com.stackroute.Muzix.Application.domain.Track;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+//@Primary
+@Qualifier("trackServiceImpl")
 public class TrackServiceImpl implements TrackService {
     TrackRepository trackRepository;
 
@@ -18,8 +24,14 @@ public class TrackServiceImpl implements TrackService {
     }
 
     @Override
-    public Track saveTrack(Track track) {
+    public Track saveTrack(Track track) throws TrackAlreadyExistsException {
+        if(trackRepository.existsById(track.getId())){
+            throw new TrackAlreadyExistsException("track already exists");
+        }
         Track savedTrack = trackRepository.save(track);
+        if(savedTrack== null){
+            throw  new TrackAlreadyExistsException("track exists");
+        }
         return savedTrack;
     }
 
@@ -45,8 +57,11 @@ public class TrackServiceImpl implements TrackService {
     }
 
     @Override
-    public Optional<Track> findByTrackName(String trackName) {
+    public Optional<Track> findByTrackName(String trackName) throws TrackNotFoundException {
      Optional<Track> track  = trackRepository.findByTrackName(trackName);
-        return track;
+        if(!(track.isPresent())){
+            throw new TrackNotFoundException("not found");
+        }
+            return track;
     }
 }
